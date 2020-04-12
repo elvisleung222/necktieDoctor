@@ -26,17 +26,20 @@ class Clinic(models.Model):
 
 class Doctor(models.Model):
     name = models.TextField()
-    languages = models.ManyToManyField(Language)
-    categories = models.ManyToManyField(Category)
-    clinics = models.ManyToManyField(Clinic)
-
-
-class Pricing(models.Model):
-    # One-to-one relationship
-    category = models.OneToOneField(
+    language = models.ManyToManyField(Language, related_name='languages')
+    clinic = models.ManyToManyField(Clinic, related_name='clinics')
+    category = models.ManyToManyField(
         Category,
-        on_delete=models.CASCADE,
-        primary_key=True
+        related_name='categories',
+        through='ConsultationCategory',
+        through_fields=('doctor', 'category')
     )
+
+
+class ConsultationCategory(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     price = models.IntegerField()
     medicine = models.TextField()
+
+

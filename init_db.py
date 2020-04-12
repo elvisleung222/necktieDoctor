@@ -1,5 +1,4 @@
-import os
-from necktie.models import Language, Category, District, Clinic, Doctor, Pricing
+from necktie.models import Language, Category, District, Clinic, Doctor, ConsultationCategory
 
 l1 = Language(code='en', name='English')
 l2 = Language(code='zh-hk', name='Cantonese')
@@ -46,28 +45,23 @@ clin2.save()
 
 d1 = Doctor(name='Law Siu Tong')
 d1.save()
-d1.languages.add(l1, l2)
-d1.clinics.add(clin1)
+d1.language.add(l1, l2)
+d1.clinic.add(clin1)
+cc1 = ConsultationCategory(doctor=d1, category=cat2, price=120, medicine='3 days')
+cc1.save()
+cc2 = ConsultationCategory(doctor=d1, category=cat4, price=180, medicine='2 days')
+cc2.save()
 d1.save()
 
 
-d2 = Doctor(name='Law Siu Tong')
+d2 = Doctor(name='Cheng Ka keung')
 d2.save()
-d2.languages.add(l2)
-d2.clinics.add(clin2)
+d2.language.add(l2)
+d2.clinic.add(clin2)
+cc3 = ConsultationCategory(doctor=d2, category=cat2, price=120, medicine='3 days')
+cc3.save()
+cc4 = ConsultationCategory(doctor=d2, category=cat4, price=180, medicine='2 days')
+cc4.save()
+cc5 = ConsultationCategory(doctor=d2, category=cat5, price=140, medicine='5 days')
+cc5.save()
 d2.save()
-
-
-# d3 = Doctor(name='鄭小強')
-# d3.languages.add(l2, l3)
-# d3.save()
-#
-# d4 = Doctor(name='李小明')
-# d4.languages.add(l2)
-# d4.save()
-#
-# d5 = Doctor(name='鄭小強')
-# d5.languages.add(l2, l3)
-# d5.save()
-
-

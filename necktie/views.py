@@ -4,7 +4,7 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework import serializers
 from rest_framework.generics import ListCreateAPIView
-from .models import Doctor, Language, Category, District, Clinic, Doctor, Pricing
+from .models import Doctor, Language, Category, District, Clinic, Doctor, ConsultationCategory
 from django.http import JsonResponse
 
 
@@ -36,23 +36,36 @@ class ClinicSerializer(serializers.ModelSerializer):
         model = Clinic
         fields = ['name', 'district', 'address', 'phone_number', 'service_hour']
 
-class DoctorSerializer(serializers.ModelSerializer):
-    languages = LanguageSerializer(
-        many=True,
-        read_only=True,
-    )
-    categories = CategorySerializer(
-        many=True,
-        read_only=True,
-    )
-    clinics = ClinicSerializer(
-        many=True,
+
+class ConsultationCategorySerializer(serializers.ModelSerializer):
+    category = CategorySerializer(
         read_only=True,
     )
 
     class Meta:
+        model = ConsultationCategory
+        fields = ['category', 'price', 'medicine']
+
+
+class DoctorSerializer(serializers.ModelSerializer):
+    language = LanguageSerializer(
+        many=True,
+        read_only=True,
+    )
+    clinic = ClinicSerializer(
+        many=True,
+        read_only=True,
+    )
+    consultation_details = ConsultationCategorySerializer(
+        many=True,
+        read_only=True,
+        source='consultationcategory_set'
+    )
+
+    class Meta:
         model = Doctor
-        fields = ['id', 'name', 'languages', 'categories', 'clinics']
+        fields = ['id', 'name', 'language', 'clinic', 'consultation_details']
+
 
 class DoctorListAPIView(ListCreateAPIView):
     """

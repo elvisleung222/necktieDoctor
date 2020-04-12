@@ -20,6 +20,6 @@ from necktie.views import DoctorListAPIView, query_doctor
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('doctor/', DoctorListAPIView.as_view()),
-    # path('doctor/<int:key>', query_doctor),
+    path('doctor/<int:key>', query_doctor),
 ]
 
