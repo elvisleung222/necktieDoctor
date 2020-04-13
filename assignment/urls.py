@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from necktie.views import DoctorListAPIView, query_doctor
+from necktie.views import ConsultationListAPIView, query_doctor
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('doctor/', DoctorListAPIView.as_view()),
+    path('doctor/', ConsultationListAPIView.as_view()),
     path('doctor/<int:key>', query_doctor),
 ]
 

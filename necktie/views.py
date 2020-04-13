@@ -3,8 +3,9 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import serializers
-from rest_framework.generics import ListCreateAPIView
-from .models import Doctor, Language, Category, District, Clinic, Doctor, ConsultationCategory
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter, BaseRangeFilter, NumberFilter
+from rest_framework.generics import ListAPIView
+from .models import Language, Category, District, Clinic, Doctor, Consultation
 from django.http import JsonResponse
 
 
@@ -28,7 +29,6 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 class ClinicSerializer(serializers.ModelSerializer):
     district = LanguageSerializer(
-        many=False,
         read_only=True,
     )
 
@@ -37,46 +37,79 @@ class ClinicSerializer(serializers.ModelSerializer):
         fields = ['name', 'district', 'address', 'phone_number', 'service_hour']
 
 
-class ConsultationCategorySerializer(serializers.ModelSerializer):
-    category = CategorySerializer(
-        read_only=True,
-    )
-
-    class Meta:
-        model = ConsultationCategory
-        fields = ['category', 'price', 'medicine']
-
-
 class DoctorSerializer(serializers.ModelSerializer):
     language = LanguageSerializer(
         many=True,
         read_only=True,
     )
-    clinic = ClinicSerializer(
+
+    class Meta:
+        model = Doctor
+        fields = ['id', 'name', 'language']
+
+
+class ConsultationSerializer(serializers.ModelSerializer):
+    doctor = DoctorSerializer(read_only=True)
+    category = CategorySerializer(read_only=True)
+    clinic = ClinicSerializer(read_only=True)
+
+    class Meta:
+        model = Consultation
+        fields = ['doctor', 'category', 'clinic', 'price', 'medicine']
+
+
+class NumberRangeFilter(BaseRangeFilter, NumberFilter):
+    pass
+
+
+class ConsultationFilter(FilterSet):
+    category = CharFilter('category__code')
+    district = CharFilter('clinic__district__code')
+    language = CharFilter('doctor__language__code')
+    price = NumberRangeFilter(field_name='price', lookup_expr='range')
+
+    class Meta:
+        model = Consultation
+        fields = ['category', 'district', 'language', 'price']
+
+
+class ConsultationListAPIView(ListAPIView):
+    """
+    API view to retrieve list of doctor
+    """
+    serializer_class = ConsultationSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ConsultationFilter
+    queryset = Consultation.objects.all()
+
+
+class Consultation_2_Serializer(serializers.ModelSerializer):
+    category = CategorySerializer(read_only=True)
+    clinic = ClinicSerializer(read_only=True)
+
+    class Meta:
+        model = Consultation
+        fields = ['category', 'clinic', 'price', 'medicine']
+
+
+class Doctor_2_Serializer(serializers.ModelSerializer):
+    language = LanguageSerializer(
         many=True,
         read_only=True,
     )
-    consultation_details = ConsultationCategorySerializer(
+    consultation_services = Consultation_2_Serializer(
         many=True,
         read_only=True,
-        source='consultationcategory_set'
+        source='consultation_set'
     )
 
     class Meta:
         model = Doctor
-        fields = ['id', 'name', 'language', 'clinic', 'consultation_details']
-
-
-class DoctorListAPIView(ListCreateAPIView):
-    """
-    API view to retrieve list of doctor
-    """
-    serializer_class = DoctorSerializer
-    queryset = Doctor.objects.all()
+        fields = ['id', 'name', 'language', 'consultation_services']
 
 
 def query_doctor(request, key):
     queryset = Doctor.objects.get(id=key)
-    serializer = DoctorSerializer(queryset, many=False)
+    serializer = Doctor_2_Serializer(queryset, many=False)
     return JsonResponse(serializer.data)
 
