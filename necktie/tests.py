@@ -1,7 +1,11 @@
 from django.test import TestCase
-from .views import ConsultationSerializer, LanguageSerializer, CategorySerializer, DistrictSerializer
+from .views import ConsultationSerializer, LanguageSerializer, CategorySerializer, DistrictSerializer, ClinicSerializer, \
+    DoctorSerializer
 from .models import Language, Category, District, Clinic, Doctor, Consultation
 import json
+from django.test import Client
+
+client = Client()
 
 
 class ConsultationTest(TestCase):
@@ -71,161 +75,7 @@ class ConsultationTest(TestCase):
         cc5.save()
         d2.save()
 
-    def test_get_all_consultation(self):
-        expected = [
-    {
-        "doctor": {
-            "id": 1,
-            "name": "Law Siu Tong",
-            "language": [
-                {
-                    "code": "en",
-                    "name": "English"
-                },
-                {
-                    "code": "zh-hk",
-                    "name": "Cantonese"
-                }
-            ]
-        },
-        "category": {
-            "code": "chinese-med",
-            "name": "Chinese Medicine"
-        },
-        "clinic": {
-            "name": "Tencent Doctorwork",
-            "district": {
-                "code": "tuen-mun",
-                "name": "Tuen Mun"
-            },
-            "address": "Shop B82 1/F Tsuen Fung Centre Tsuen Wan NT",
-            "phone_number": "2156 5893",
-            "service_hour": "Monday"
-        },
-        "price": 120,
-        "medicine": "3 days"
-    },
-    {
-        "doctor": {
-            "id": 1,
-            "name": "Law Siu Tong",
-            "language": [
-                {
-                    "code": "en",
-                    "name": "English"
-                },
-                {
-                    "code": "zh-hk",
-                    "name": "Cantonese"
-                }
-            ]
-        },
-        "category": {
-            "code": "acupuncture",
-            "name": "Acupuncture"
-        },
-        "clinic": {
-            "name": "AI Medical",
-            "district": {
-                "code": "tsuen-wan",
-                "name": "Tsuen Wan"
-            },
-            "address": "Room 40, Ground Floor, Jade Field Garden, 15-19 Ngau Tau Kok Road, Ngau Tau Kok, Kowloon",
-            "phone_number": "2156 5893",
-            "service_hour": "Monday"
-        },
-        "price": 180,
-        "medicine": "2 days"
-    },
-    {
-        "doctor": {
-            "id": 2,
-            "name": "Cheng Ka keung",
-            "language": [
-                {
-                    "code": "zh-hk",
-                    "name": "Cantonese"
-                }
-            ]
-        },
-        "category": {
-            "code": "chinese-med",
-            "name": "Chinese Medicine"
-        },
-        "clinic": {
-            "name": "Tencent Doctorwork",
-            "district": {
-                "code": "tuen-mun",
-                "name": "Tuen Mun"
-            },
-            "address": "Shop B82 1/F Tsuen Fung Centre Tsuen Wan NT",
-            "phone_number": "2156 5893",
-            "service_hour": "Monday"
-        },
-        "price": 120,
-        "medicine": "3 days"
-    },
-    {
-        "doctor": {
-            "id": 2,
-            "name": "Cheng Ka keung",
-            "language": [
-                {
-                    "code": "zh-hk",
-                    "name": "Cantonese"
-                }
-            ]
-        },
-        "category": {
-            "code": "acupuncture",
-            "name": "Acupuncture"
-        },
-        "clinic": {
-            "name": "AI Medical",
-            "district": {
-                "code": "tsuen-wan",
-                "name": "Tsuen Wan"
-            },
-            "address": "Room 40, Ground Floor, Jade Field Garden, 15-19 Ngau Tau Kok Road, Ngau Tau Kok, Kowloon",
-            "phone_number": "2156 5893",
-            "service_hour": "Monday"
-        },
-        "price": 180,
-        "medicine": "2 days"
-    },
-    {
-        "doctor": {
-            "id": 2,
-            "name": "Cheng Ka keung",
-            "language": [
-                {
-                    "code": "zh-hk",
-                    "name": "Cantonese"
-                }
-            ]
-        },
-        "category": {
-            "code": "x-ray",
-            "name": "X-Ray"
-        },
-        "clinic": {
-            "name": "AI Medical",
-            "district": {
-                "code": "tsuen-wan",
-                "name": "Tsuen Wan"
-            },
-            "address": "Room 40, Ground Floor, Jade Field Garden, 15-19 Ngau Tau Kok Road, Ngau Tau Kok, Kowloon",
-            "phone_number": "2156 5893",
-            "service_hour": "Monday"
-        },
-        "price": 140,
-        "medicine": "5 days"
-    }
-]
-        consultations = Consultation.objects.all()
-        serializer = ConsultationSerializer(consultations, many=True)
-        self.assertEqual(expected, json.loads(json.dumps(serializer.data)))
-
+    # Serializers
     def test_language_serializer(self):
         expected = {
             'code': 'en',
@@ -255,3 +105,125 @@ class ConsultationTest(TestCase):
         district = District.objects.get(code='tsuen-wan')
         serializer = DistrictSerializer(district)
         self.assertEqual(expected, json.loads(json.dumps(serializer.data)))
+
+    def test_clinic_serializer(self):
+        expected = {
+            "name": "AI Medical",
+            "district": {
+                "code": "tsuen-wan",
+                "name": "Tsuen Wan"
+            },
+            "address": "Room 40, Ground Floor, Jade Field Garden, 15-19 Ngau Tau Kok Road, Ngau Tau Kok, Kowloon",
+            "phone_number": "2156 5893",
+            "service_hour": "Monday"
+        }
+
+        clinic = Clinic.objects.get(name='AI Medical')
+        serializer = ClinicSerializer(clinic)
+        self.assertEqual(expected, json.loads(json.dumps(serializer.data)))
+
+    def test_doctor_serializer(self):
+        expected = {
+            "id": 1,
+            "name": "Law Siu Tong",
+            "language": [
+                {
+                    "code": "en",
+                    "name": "English"
+                },
+                {
+                    "code": "zh-hk",
+                    "name": "Cantonese"
+                }
+            ]
+        }
+
+        doctor = Doctor.objects.get(id=1)
+        serializer = DoctorSerializer(doctor)
+        self.assertEqual(expected, json.loads(json.dumps(serializer.data)))
+
+    def test_consultation_serializer(self):
+        expected = {
+            "doctor": {
+                "id": 2,
+                "name": "Cheng Ka keung",
+                "language": [
+                    {
+                        "code": "zh-hk",
+                        "name": "Cantonese"
+                    }
+                ]
+            },
+            "category": {
+                "code": "x-ray",
+                "name": "X-Ray"
+            },
+            "clinic": {
+                "name": "AI Medical",
+                "district": {
+                    "code": "tsuen-wan",
+                    "name": "Tsuen Wan"
+                },
+                "address": "Room 40, Ground Floor, Jade Field Garden, 15-19 Ngau Tau Kok Road, Ngau Tau Kok, Kowloon",
+                "phone_number": "2156 5893",
+                "service_hour": "Monday"
+            },
+            "price": 140,
+            "medicine": "5 days"
+        }
+
+        consultation = Consultation.objects.get(price=140)
+        serializer = ConsultationSerializer(consultation)
+        self.assertEqual(expected, json.loads(json.dumps(serializer.data)))
+
+    # Views and APIs
+    def test_all_consultation(self):
+        res = client.get('/doctor/')
+        res = json.loads(res.content)
+        self.assertEqual(5, len(res))
+
+    def test_get_doctor_by_id(self):
+        expected_id = 2
+        res = client.get('/doctor/' + str(expected_id))
+        res = json.loads(res.content)
+        self.assertEqual(expected_id, res['id'])
+
+    def test_consultation_filter_district(self):
+        expected_districts = ['tuen-mun', 'tsuen-wan']
+        for expected_district in expected_districts:
+            res = client.get('/doctor/', {'district': expected_district})
+            res = json.loads(res.content)
+            for con in res:
+                self.assertEqual(expected_district, con['clinic']['district']['code'])
+
+    def test_consultation_filter_district_price(self):
+        expected_district = 'tsuen-wan'
+        expected_price_min = 130
+        expected_price_max = 150
+
+        res = client.get('/doctor/', {'district': expected_district,
+                                      'price_range': str(expected_price_min) + ',' + str(expected_price_max)})
+        res = json.loads(res.content)
+        for con in res:
+            self.assertEqual(expected_district, con['clinic']['district']['code'])
+            self.assertTrue(expected_price_min <= con['price'] <= expected_price_max)
+
+    def test_consultation_filter_language(self):
+        expected_language = 'zh-hk'
+        res = client.get('/doctor/', {'language': expected_language})
+        res = json.loads(res.content)
+        for con in res:
+            check = False
+            languages = con['doctor']['language']
+            for lang in languages:
+                if lang['code'] == expected_language:
+                    check = True
+            # language array must contain the expected language
+            self.assertTrue(check)
+
+    def test_consultation_filter_category(self):
+        expected_category = 'x-ray'
+        res = client.get('/doctor/', {'category': expected_category})
+        res = json.loads(res.content)
+        for con in res:
+            self.assertEqual(expected_category, con['category']['code'])

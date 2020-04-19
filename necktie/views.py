@@ -1,6 +1,5 @@
 from django.shortcuts import render
 
-
 # Create your views here.
 from rest_framework import serializers
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter, BaseRangeFilter, NumberFilter
@@ -66,11 +65,11 @@ class ConsultationFilter(FilterSet):
     category = CharFilter('category__code')
     district = CharFilter('clinic__district__code')
     language = CharFilter('doctor__language__code')
-    price = NumberRangeFilter(field_name='price', lookup_expr='range')
+    price_range = NumberRangeFilter(field_name='price', lookup_expr='range')
 
     class Meta:
         model = Consultation
-        fields = ['category', 'district', 'language', 'price']
+        fields = ['category', 'district', 'language', 'price_range']
 
 
 class ConsultationListAPIView(ListAPIView):
@@ -112,4 +111,3 @@ def query_doctor(request, key):
     queryset = Doctor.objects.get(id=key)
     serializer = Doctor_2_Serializer(queryset, many=False)
     return JsonResponse(serializer.data)
-
