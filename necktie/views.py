@@ -81,7 +81,7 @@ class ConsultationListAPIView(ListAPIView):
     filterset_class = ConsultationFilter
     queryset = Consultation.objects.all()
 
-
+# TODO: clean up all names of serializer and remove unneeded stuffs
 class Consultation_2_Serializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     clinic = ClinicSerializer(read_only=True)
@@ -106,7 +106,7 @@ class Doctor_2_Serializer(serializers.ModelSerializer):
         model = Doctor
         fields = ['id', 'name', 'language', 'consultation_services']
 
-
+# TODO: use View to replace the below query
 def query_doctor(request, key):
     queryset = Doctor.objects.get(id=key)
     serializer = Doctor_2_Serializer(queryset, many=False)

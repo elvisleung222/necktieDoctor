@@ -18,7 +18,7 @@ from django.urls import path
 from necktie.views import ConsultationListAPIView, query_doctor
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls), # TODO: see if remove this path
     path('doctor/', ConsultationListAPIView.as_view()),
     path('doctor/<int:key>', query_doctor),
 ]

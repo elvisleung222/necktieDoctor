@@ -1,12 +1,13 @@
-from django.test import TestCase
+import json
+from django.test import TestCase, Client
+from .models import Language, Category, District, Clinic, Doctor, Consultation
 from .views import ConsultationSerializer, LanguageSerializer, CategorySerializer, DistrictSerializer, ClinicSerializer, \
     DoctorSerializer
-from .models import Language, Category, District, Clinic, Doctor, Consultation
-import json
-from django.test import Client
 
 client = Client()
 
+
+# TODO: double check the names of tests
 
 class ConsultationTest(TestCase):
 
@@ -43,7 +44,7 @@ class ConsultationTest(TestCase):
         cat4.save()
         cat5.save()
         cat6.save()
-
+        # TODO: clean up service_hour data
         clin1 = Clinic(name='Tencent Doctorwork', address='Shop B82 1/F Tsuen Fung Centre Tsuen Wan NT',
                        phone_number='2156 5893', service_hour='Monday')
         clin1.district = dist2

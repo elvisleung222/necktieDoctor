@@ -1,5 +1,6 @@
 from django.db import models
 
+# TODO: put an ER diagram to README
 
 class Language(models.Model):
     code = models.CharField(max_length=20)
