@@ -1,11 +1,8 @@
-from django.shortcuts import render
-
 # Create your views here.
 from rest_framework import serializers
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter, BaseRangeFilter, NumberFilter
 from rest_framework.generics import ListAPIView
-from .models import Language, Category, District, Clinic, Doctor, Consultation
-from django.http import JsonResponse
+from ..models import Language, Category, District, Clinic, Doctor, Consultation
 
 
 class LanguageSerializer(serializers.ModelSerializer):
@@ -73,41 +70,7 @@ class ConsultationFilter(FilterSet):
 
 
 class ConsultationListAPIView(ListAPIView):
-    """
-    API view to retrieve list of doctor
-    """
     serializer_class = ConsultationSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ConsultationFilter
     queryset = Consultation.objects.all()
-
-# TODO: clean up all names of serializer and remove unneeded stuffs
-class Consultation_2_Serializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
-    clinic = ClinicSerializer(read_only=True)
-
-    class Meta:
-        model = Consultation
-        fields = ['category', 'clinic', 'price', 'medicine']
-
-
-class Doctor_2_Serializer(serializers.ModelSerializer):
-    language = LanguageSerializer(
-        many=True,
-        read_only=True,
-    )
-    consultation_services = Consultation_2_Serializer(
-        many=True,
-        read_only=True,
-        source='consultation_set'
-    )
-
-    class Meta:
-        model = Doctor
-        fields = ['id', 'name', 'language', 'consultation_services']
-
-# TODO: use View to replace the below query
-def query_doctor(request, key):
-    queryset = Doctor.objects.get(id=key)
-    serializer = Doctor_2_Serializer(queryset, many=False)
-    return JsonResponse(serializer.data)

@@ -1,17 +1,14 @@
 import json
 from django.test import TestCase, Client
 from .models import Language, Category, District, Clinic, Doctor, Consultation
-from .views import ConsultationSerializer, LanguageSerializer, CategorySerializer, DistrictSerializer, ClinicSerializer, \
-    DoctorSerializer
-
-client = Client()
+from .views.consultationView import ConsultationSerializer, LanguageSerializer, CategorySerializer, \
+    DistrictSerializer, ClinicSerializer, DoctorSerializer
 
 
-# TODO: double check the names of tests
-
-class ConsultationTest(TestCase):
+class Tests(TestCase):
 
     def setUp(self):
+        self.client = Client()
         l1 = Language(code='en', name='English')
         l2 = Language(code='zh-hk', name='Cantonese')
         l3 = Language(code='zh-cn', name='Mandarin')
@@ -178,40 +175,40 @@ class ConsultationTest(TestCase):
         self.assertEqual(expected, json.loads(json.dumps(serializer.data)))
 
     # Views and APIs
-    def test_all_consultation(self):
-        res = client.get('/doctor/')
+    def test_get_all_consultation(self):
+        res = self.client.get('/doctor/')
         res = json.loads(res.content)
         self.assertEqual(5, len(res))
 
     def test_get_doctor_by_id(self):
         expected_id = 2
-        res = client.get('/doctor/' + str(expected_id))
+        res = self.client.get('/doctor/' + str(expected_id))
         res = json.loads(res.content)
         self.assertEqual(expected_id, res['id'])
 
-    def test_consultation_filter_district(self):
+    def test_get_consultation_filter_by_district(self):
         expected_districts = ['tuen-mun', 'tsuen-wan']
         for expected_district in expected_districts:
-            res = client.get('/doctor/', {'district': expected_district})
+            res = self.client.get('/doctor/', {'district': expected_district})
             res = json.loads(res.content)
             for con in res:
                 self.assertEqual(expected_district, con['clinic']['district']['code'])
 
-    def test_consultation_filter_district_price(self):
+    def test_get_consultation_filter_by_district_n_price(self):
         expected_district = 'tsuen-wan'
         expected_price_min = 130
         expected_price_max = 150
 
-        res = client.get('/doctor/', {'district': expected_district,
+        res = self.client.get('/doctor/', {'district': expected_district,
                                       'price_range': str(expected_price_min) + ',' + str(expected_price_max)})
         res = json.loads(res.content)
         for con in res:
             self.assertEqual(expected_district, con['clinic']['district']['code'])
             self.assertTrue(expected_price_min <= con['price'] <= expected_price_max)
 
-    def test_consultation_filter_language(self):
+    def test_get_consultation_filter_by_language(self):
         expected_language = 'zh-hk'
-        res = client.get('/doctor/', {'language': expected_language})
+        res = self.client.get('/doctor/', {'language': expected_language})
         res = json.loads(res.content)
         for con in res:
             check = False
@@ -222,9 +219,9 @@ class ConsultationTest(TestCase):
             # language array must contain the expected language
             self.assertTrue(check)
 
-    def test_consultation_filter_category(self):
+    def test_get_consultation_filter_by_category(self):
         expected_category = 'x-ray'
-        res = client.get('/doctor/', {'category': expected_category})
+        res = self.client.get('/doctor/', {'category': expected_category})
         res = json.loads(res.content)
         for con in res:
             self.assertEqual(expected_category, con['category']['code'])
