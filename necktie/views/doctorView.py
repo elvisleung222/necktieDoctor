@@ -34,8 +34,3 @@ class DoctorRetrieveAPIView(RetrieveAPIView):
     serializer_class = DoctorSerializer
     queryset = Doctor.objects.all()
     lookup_field = 'id'
-
-
-
-
-

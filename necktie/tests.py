@@ -43,13 +43,15 @@ class Tests(TestCase):
         cat6.save()
         # TODO: clean up service_hour data
         clin1 = Clinic(name='Tencent Doctorwork', address='Shop B82 1/F Tsuen Fung Centre Tsuen Wan NT',
-                       phone_number='2156 5893', service_hour='Monday')
+                       phone_number='2156 5893',
+                       service_hour='Mon, Thur : 9:00am-2:00pm, 3:00pm-7:00pm; Tue : 3:00pm-7:00pm; Wed : 9:00am-2:00pm; Fri : 9:00am-2:00pm, 3:00pm-7:30pm')
         clin1.district = dist2
         clin1.save()
 
         clin2 = Clinic(name='AI Medical',
                        address='Room 40, Ground Floor, Jade Field Garden, 15-19 Ngau Tau Kok Road, Ngau Tau Kok, Kowloon',
-                       phone_number='2156 5893', service_hour='Monday')
+                       phone_number='2156 5893',
+                       service_hour='Mon, Tue, Thur & Fri : 9:00am-2:00pm, 3:00pm-9:00pm; Wed : 9:00am-1:00pm; Sat : 9:00am-2:00pm, 3:00pm-5:00pm; Sun : 10:00am-2:00pm')
         clin2.district = dist3
         clin2.save()
 
@@ -113,7 +115,7 @@ class Tests(TestCase):
             },
             "address": "Room 40, Ground Floor, Jade Field Garden, 15-19 Ngau Tau Kok Road, Ngau Tau Kok, Kowloon",
             "phone_number": "2156 5893",
-            "service_hour": "Monday"
+            "service_hour": "Mon, Tue, Thur & Fri : 9:00am-2:00pm, 3:00pm-9:00pm; Wed : 9:00am-1:00pm; Sat : 9:00am-2:00pm, 3:00pm-5:00pm; Sun : 10:00am-2:00pm"
         }
 
         clinic = Clinic.objects.get(name='AI Medical')
@@ -164,7 +166,7 @@ class Tests(TestCase):
                 },
                 "address": "Room 40, Ground Floor, Jade Field Garden, 15-19 Ngau Tau Kok Road, Ngau Tau Kok, Kowloon",
                 "phone_number": "2156 5893",
-                "service_hour": "Monday"
+                "service_hour": "Mon, Tue, Thur & Fri : 9:00am-2:00pm, 3:00pm-9:00pm; Wed : 9:00am-1:00pm; Sat : 9:00am-2:00pm, 3:00pm-5:00pm; Sun : 10:00am-2:00pm"
             },
             "price": 140,
             "medicine": "5 days"
@@ -200,7 +202,7 @@ class Tests(TestCase):
         expected_price_max = 150
 
         res = self.client.get('/doctor/', {'district': expected_district,
-                                      'price_range': str(expected_price_min) + ',' + str(expected_price_max)})
+                                           'price_range': str(expected_price_min) + ',' + str(expected_price_max)})
         res = json.loads(res.content)
         for con in res:
             self.assertEqual(expected_district, con['clinic']['district']['code'])

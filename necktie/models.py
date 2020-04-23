@@ -1,7 +1,5 @@
 from django.db import models
 
-# TODO: put an ER diagram to README
-
 
 class Language(models.Model):
     code = models.CharField(max_length=20)
@@ -49,5 +47,3 @@ class Consultation(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE)
     price = models.IntegerField()
     medicine = models.TextField()
-
-
