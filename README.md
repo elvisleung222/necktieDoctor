@@ -26,9 +26,13 @@ python manage.py runserver
   
   http://127.0.0.1:8000/doctor/
 
+- List all doctors with filters
+
+  http://127.0.0.1:8000/doctor?district=tuen-mun&price_range=119,121
+
 - Search a doctor by ID
   
-  http://127.0.0.1:8000/doctor/< id >
+  http://127.0.0.1:8000/doctor/2
 
 ## Utils
 
